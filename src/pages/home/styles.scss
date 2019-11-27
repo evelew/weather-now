@@ -1,0 +1,21 @@
+.home {
+  align-items: center;
+  background: #F1F1F1;
+  display: flex;
+  flex-flow: column;
+  padding: 38px 15px 0 15px;
+  
+  @media(min-width: 1024px) {
+    flex-flow: row;
+    justify-content: space-between;
+  }
+}
+
+.home--card {
+  margin-bottom: 36px;
+  max-width: 312px;
+  width: 100%;
+
+  @media(min-width: 1024px) {
+  }
+}
