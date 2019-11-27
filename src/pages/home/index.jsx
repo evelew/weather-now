@@ -2,6 +2,8 @@ import React from 'react'
 
 import './styles.scss'
 import Card from '../../components/card'
+import Header from '../../components/header'
+
 
 export default function Home() {
   const cards = [
@@ -28,12 +30,16 @@ export default function Home() {
   ]
 
   return (
-    <section className="home">
-      {cards.map((card, index) => (
-        <article className="home--card" key={index}>
-          <Card city={card.city} country={card.country} temperature={card.temperature} humidity={card.humidity} pressure={card.pressure} updatedAt={card.updatedAt} />
-        </article>
-      ))}
-    </section>
+    <>
+      <Header />
+      
+      <section className="home">
+        {cards.map((card, index) => (
+          <article className="home--card" key={index}>
+            <Card city={card.city} country={card.country} temperature={card.temperature} humidity={card.humidity} pressure={card.pressure} updatedAt={card.updatedAt} />
+          </article>
+        ))}
+      </section>
+    </>
   )
 }
