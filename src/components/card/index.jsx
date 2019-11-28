@@ -1,13 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import Loader from '../../icons/loader'
 
 import './styles.scss'
 
-export default function Card({ city, country, temperature, humidity, pressure, updatedAt }) {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(false)
-
+export default function Card({ loading, error, onClickTryAgain, city, country, temperature, humidity, pressure, updatedAt }) {
   const getClassStyle = (value) => {
     if (value <= 5) {
       return 'card-body--blue'
@@ -21,8 +18,8 @@ export default function Card({ city, country, temperature, humidity, pressure, u
   const renderHeader = () => {
     return (
       <div className="card-header">
-          <p>{city}, {country}</p>
-        </div>
+        <p>{city}, {country}</p>
+      </div>
     )
   }
 
@@ -34,7 +31,7 @@ export default function Card({ city, country, temperature, humidity, pressure, u
         {renderHeader()}
 
         <div className="card-loader">
-        <Loader />
+          <Loader />
         </div>
       </article>
     )
@@ -50,7 +47,7 @@ export default function Card({ city, country, temperature, humidity, pressure, u
             <strong>Something went wrong</strong>
           </p>
 
-          <button>Try again</button>
+          <button onClick={onClickTryAgain}>Try again</button>
         </div>
       </article>
     )

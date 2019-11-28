@@ -6,8 +6,8 @@
 	<!ENTITY ns_ai "http://ns.adobe.com/AdobeIllustrator/10.0/">
 	<!ENTITY ns_graphs "http://ns.adobe.com/Graphs/1.0/">
 ]>
-<svg version="1.2" baseProfile="tiny" id="Layer_1" xmlnsX="&ns_extend;" xmlnsI="&ns_ai;" xmlnsGraph="&ns_graphs;"
-	 xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" xmlnsA="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+<svg version="1.2" baseProfile="tiny" id="Layer_1" xmlnsx="&ns_extend;" xmlnsi="&ns_ai;" xmlnsgraph="&ns_graphs;"
+	 xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" xmlnsa="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
 	 x="0px" y="0px" viewBox="0 0 108 16" xmlSpace="preserve">
 <g>
 	<g>

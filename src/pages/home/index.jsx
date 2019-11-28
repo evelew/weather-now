@@ -1,44 +1,56 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
-import './styles.scss'
+import { fetchData } from '../../api'
+
 import Card from '../../components/card'
 import Header from '../../components/header'
 
+import './styles.scss'
 
 export default function Home() {
-  const cards = [
-    {
-      city: 'Fazenda Rio Grande',
-      country: 'BR',
-      temperature: 4,
-      updatedAt: '25:65:45'
-    },
-    {
-      city: 'Curitiba',
-      country: 'BR',
-      temperature: 26,
-      humidity: 65,
-      pressure: 856,
-      updatedAt: '25:65:45'
-    },
-    {
-      city: 'São José dos Pinhais',
+  const [nairobi, setNairobi] = useState(null)
+
+  useEffect(() => {
+    setNairobi({
+      city: 'Nairobi',
       country: 'BR',
       temperature: 13,
-      updatedAt: '25:65:45'
+      updatedAt: '25:65:45',
+      loading: false,
+      error: true
+    })
+  }, [])
+
+  const onClickTryAgain = async (card, setItem) => {
+    try {
+      setItem({
+        city: card.city,
+        country: card.country,
+        loading: true
+      })
+
+      const data = await fetchData()
+
+      setItem(data)
+    } catch (error) {
+      setItem({
+        city: card.city,
+        country: card.country,
+        error: true
+      })
     }
-  ]
+  }
 
   return (
     <>
       <Header />
-      
+
       <section className="home">
-        {cards.map((card, index) => (
-          <article className="home--card" key={index}>
-            <Card city={card.city} country={card.country} temperature={card.temperature} humidity={card.humidity} pressure={card.pressure} updatedAt={card.updatedAt} />
+        {nairobi && (
+          <article className="home--card">
+            <Card loading={nairobi.loading} error={nairobi.error} onClickTryAgain={() => onClickTryAgain(nairobi, setNairobi)} city={nairobi.city} country={nairobi.country} temperature={nairobi.temperature} updatedAt={nairobi.updatedAt} />
           </article>
-        ))}
+        )}
       </section>
     </>
   )
