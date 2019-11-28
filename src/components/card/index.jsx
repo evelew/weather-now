@@ -6,6 +6,7 @@ import './styles.scss'
 
 export default function Card({ city, country, temperature, humidity, pressure, updatedAt }) {
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
 
   const getClassStyle = (value) => {
     if (value <= 5) {
@@ -34,6 +35,22 @@ export default function Card({ city, country, temperature, humidity, pressure, u
 
         <div className="card-loader">
         <Loader />
+        </div>
+      </article>
+    )
+  }
+
+  if (error) {
+    return (
+      <article className="card">
+        {renderHeader()}
+
+        <div className="card-error">
+          <p>
+            <strong>Something went wrong</strong>
+          </p>
+
+          <button>Try again</button>
         </div>
       </article>
     )

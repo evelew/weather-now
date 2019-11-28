@@ -73,3 +73,24 @@
   justify-content: center;
   height: 222px;
 }
+
+.card-error {
+  align-items: center;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  height: 222px;
+
+  p {
+    color: #ED1946;
+    margin-bottom: 22px;
+  }
+
+  button {
+    border: 2px solid #737C84;
+    border-radius: 26px;
+    color: #BABABA;
+    font-size: 16px;
+    padding: 12px 20px;
+  }
+}
