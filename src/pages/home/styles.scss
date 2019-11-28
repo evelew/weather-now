@@ -8,6 +8,11 @@
   @media(min-width: 1024px) {
     flex-flow: row;
     justify-content: space-between;
+    height: 100vh;
+    margin: 0 auto;
+    max-width: 1280px;
+    padding: 0 112px;
+    width: 100%;
   }
 }
 
@@ -15,7 +20,8 @@
   margin-bottom: 36px;
   max-width: 312px;
   width: 100%;
-
+  
   @media(min-width: 1024px) {
+    margin-bottom: 0;
   }
 }

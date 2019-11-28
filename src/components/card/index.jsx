@@ -1,7 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
+
+import Loader from '../../icons/loader'
+
 import './styles.scss'
 
 export default function Card({ city, country, temperature, humidity, pressure, updatedAt }) {
+  const [loading, setLoading] = useState(false)
+
   const getClassStyle = (value) => {
     if (value <= 5) {
       return 'card-body--blue'
@@ -12,13 +17,32 @@ export default function Card({ city, country, temperature, humidity, pressure, u
     }
   }
 
+  const renderHeader = () => {
+    return (
+      <div className="card-header">
+          <p>{city}, {country}</p>
+        </div>
+    )
+  }
+
   const colorStyle = getClassStyle(temperature)
+
+  if (loading) {
+    return (
+      <article className="card">
+        {renderHeader()}
+
+        <div className="card-loader">
+        <Loader />
+        </div>
+      </article>
+    )
+  }
 
   return (
     <article className="card">
-      <div className="card-header">
-        <p>{city}, {country}</p>
-      </div>
+      {renderHeader()}
+
       <div className="card-body">
         <p className={colorStyle}>{temperature}°</p>
       </div>
