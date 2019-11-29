@@ -41,6 +41,8 @@ export default function Home() {
 
   useEffect(() => {
     getData()
+
+    // eslint-disable-next-line
   }, [])
 
   const getData = async () => {
