@@ -8,35 +8,120 @@ import Header from 'components/header'
 import './styles.scss'
 
 export default function Home() {
-  const [nairobi, setNairobi] = useState(null)
+  const data = {
+    nuuk: {
+      city: 'Nuuk',
+      country: 'GL'
+    },
+    urubici: {
+      city: 'Urubici',
+      country: 'BR'
+    },
+    nairobi: {
+      city: 'Nairobi',
+      country: 'KE'
+    }
+  }
+
+  const [nuuk, setNuuk] = useState({
+    city: data.nuuk.city,
+    country: data.nuuk.country,
+    loading: true
+  })
+  const [urubici, setUrubici] = useState({
+    city: data.urubici.city,
+    country: data.urubici.country,
+    loading: true
+  })
+  const [nairobi, setNairobi] = useState({
+    city: data.nairobi.city,
+    country: data.nairobi.country,
+    loading: true
+  })
 
   useEffect(() => {
-    setNairobi({
-      city: 'Nairobi',
-      country: 'BR',
-      temperature: 13,
-      updatedAt: '25:65:45',
-      loading: false,
-      error: true,
-    })
+    getData()
   }, [])
 
-  const onClickTryAgain = async (card, setItem) => {
+  const getData = async () => {
+    getDataFromNuuk()
+    getDataFromUrubici()
+    getDataFromNairobi()
+  }
+
+  const getDataFromNuuk = async () => {
+    const { city, country } = data.nuuk
+    setNuuk({ loading: true })
+
     try {
-      setItem({
-        city: card.city,
-        country: card.country,
-        loading: true,
+      const from = `${city},${country}`
+      const { main } = await fetchData({ from })
+
+      setNuuk({
+        city: city,
+        country: country,
+        temperature: main.temp,
+        updatedAt: '25:65:45',
+        loading: false
       })
-
-      const data = await fetchData()
-
-      setItem(data)
     } catch (error) {
-      setItem({
-        city: card.city,
-        country: card.country,
-        error: true,
+      setNuuk({
+        city: city,
+        country: country,
+        updatedAt: '25:65:45',
+        error: true
+      })
+    }
+  }
+
+  const getDataFromUrubici = async () => {
+    const { city, country } = data.urubici
+    setUrubici({ loading: true })
+
+    try {
+      const from = `${city},${country}`
+      const { main } = await fetchData({ from })
+
+      setUrubici({
+        city: city,
+        country: country,
+        temperature: main.temp,
+        humidity: main.humidity,
+        pressure: main.pressure,
+        updatedAt: '25:65:45',
+        loading: false
+      })
+    } catch (error) {
+      setUrubici({
+        city: city,
+        country: country,
+        updatedAt: '25:65:45',
+        error: true
+      })
+    }
+  }
+
+  const getDataFromNairobi = async () => {
+    const { city, country } = data.nairobi
+    setNairobi({ loading: true })
+
+    try {
+      const from = `${city},${country}`
+      const { main } = await fetchData({ from })
+
+      setNairobi({
+        city: city,
+        country: country,
+        temperature: main.temp,
+        updatedAt: '25:65:45',
+        loading: false
+      })
+    } catch (error) {
+      setNairobi({
+        city: data.nairobi.city,
+        country: data.nairobi.country,
+        updatedAt: '25:65:45',
+        error: true
       })
     }
   }
@@ -46,19 +131,43 @@ export default function Home() {
       <Header />
 
       <section className="home">
-        {nairobi && (
-          <article className="home--card">
-            <Card
-              loading={nairobi.loading}
-              error={nairobi.error}
-              onClickTryAgain={() => onClickTryAgain(nairobi, setNairobi)}
-              city={nairobi.city}
-              country={nairobi.country}
-              temperature={nairobi.temperature}
-              updatedAt={nairobi.updatedAt}
-            />
-          </article>
-        )}
+        <article className="home--card">
+          <Card
+            loading={nuuk.loading}
+            error={nuuk.error}
+            onClickTryAgain={getDataFromNuuk}
+            city={nuuk.city}
+            country={nuuk.country}
+            temperature={nuuk.temperature}
+            updatedAt={nuuk.updatedAt}
+          />
+        </article>
+
+        <article className="home--card">
+          <Card
+            loading={urubici.loading}
+            error={urubici.error}
+            onClickTryAgain={getDataFromUrubici}
+            city={urubici.city}
+            country={urubici.country}
+            temperature={urubici.temperature}
+            humidity={urubici.humidity}
+            pressure={urubici.pressure}
+            updatedAt={urubici.updatedAt}
+          />
+        </article>
+
+        <article className="home--card">
+          <Card
+            loading={nairobi.loading}
+            error={nairobi.error}
+            onClickTryAgain={getDataFromNairobi}
+            city={nairobi.city}
+            country={nairobi.country}
+            temperature={nairobi.temperature}
+            updatedAt={nairobi.updatedAt}
+          />
+        </article>
       </section>
     </>
   )

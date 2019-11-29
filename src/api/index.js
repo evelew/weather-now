@@ -1,26 +1,10 @@
-const request = ({ error = false }) => {
-  if (error) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        return reject()
-      }, 2000)
-    })
-  }
+import request from './http'
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      return resolve({
-        city: 'Nairobi',
-        country: 'BR',
-        temperature: 5,
-        updatedAt: '25:65:45',
-        loading: false,
-        error: false
-      })
-    }, 2000)
+export const fetchData = ({ from }) => {
+  return request({
+    method: 'GET',
+    url: `?q=${from}&units=celsius&appid=b6907d289e10d714a6e88b30761fae22`,
   })
-}
-
-export const fetchData = () => {
-  return request({ error: false });
+    .then(response => response.data)
+    .catch(error => error)
 }
