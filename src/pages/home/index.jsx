@@ -103,7 +103,7 @@ export default function Home() {
         data = {
           city,
           country,
-          temperature: main.temp,
+          temperature: parseInt(main.temp),
           humidity: main.humidity,
           pressure: main.pressure
         }
@@ -111,7 +111,7 @@ export default function Home() {
         data = {
           city,
           country,
-          temperature: main.temp
+          temperature: parseInt(main.temp)
         }
       }
 
