@@ -47,9 +47,9 @@ export default function Home() {
   }, [])
 
   const getData = async () => {
-    getDataFromNuuk()
-    getDataFromUrubici()
-    getDataFromNairobi()
+    fetch({ data: data.nuuk, setData: setNuuk })
+    fetch({ data: data.urubici, setData: setUrubici, showMoreDetails: true })
+    fetch({ data: data.nairobi, setData: setNairobi })
   }
 
   const updateAfterTenMinutes = () => {
@@ -69,80 +69,59 @@ export default function Home() {
     })
   }
 
-  const getDataFromNuuk = async () => {
-    const { city, country } = data.nuuk
-    setNuuk({ loading: true })
-
-    try {
-      const from = `${city},${country}`
-      const { main } = await fetchData({ from })
-
-      setNuuk({
-        city: city,
-        country: country,
-        temperature: main.temp,
-        updatedAt: getDate(),
-        loading: false
-      })
-    } catch (error) {
-      setNuuk({
-        city: city,
-        country: country,
-        updatedAt: getDate(),
-        error: true
-      })
-    }
+  const setDataCard = ({ data, setData }) => {
+    setData({
+      city: data.city,
+      country: data.country,
+      temperature: data.temperature,
+      humidity: data.humidity,
+      pressure: data.pressure,
+      updatedAt: getDate(),
+      loading: false
+    })
   }
 
-  const getDataFromUrubici = async () => {
-    const { city, country } = data.urubici
-    setUrubici({ loading: true })
-
-    try {
-      const from = `${city},${country}`
-      const { main } = await fetchData({ from })
-
-      setUrubici({
-        city: city,
-        country: country,
-        temperature: main.temp,
-        humidity: main.humidity,
-        pressure: main.pressure,
-        updatedAt: getDate(),
-        loading: false
-      })
-    } catch (error) {
-      setUrubici({
-        city: city,
-        country: country,
-        updatedAt: getDate(),
-        error: true
-      })
-    }
+  const setErrorCard = ({ data, setData }) => {
+    setData({
+      city: data.city,
+      country: data.country,
+      error: true
+    })
   }
 
-  const getDataFromNairobi = async () => {
-    const { city, country } = data.nairobi
-    setNairobi({ loading: true })
+  const fetch = async ({ data, setData, showMoreDetails }) => {
+    const { city, country } = data
+    setData({ loading: true })
 
     try {
       const from = `${city},${country}`
       const { main } = await fetchData({ from })
 
-      setNairobi({
-        city: city,
-        country: country,
-        temperature: main.temp,
-        updatedAt: getDate(),
-        loading: false
-      })
+      let data = null
+
+      if (showMoreDetails) {
+        data = {
+          city,
+          country,
+          temperature: main.temp,
+          humidity: main.humidity,
+          pressure: main.pressure
+        }
+      } else {
+        data = {
+          city,
+          country,
+          temperature: main.temp
+        }
+      }
+
+      setDataCard({ data, setData })
     } catch (error) {
-      setNairobi({
-        city: data.nairobi.city,
-        country: data.nairobi.country,
-        updatedAt: getDate(),
-        error: true
-      })
+      const data = {
+        city,
+        country
+      }
+      setErrorCard({ data, setData })
     }
   }
 
@@ -155,7 +134,7 @@ export default function Home() {
           <Card
             loading={nuuk.loading}
             error={nuuk.error}
-            onClickTryAgain={getDataFromNuuk}
+            onClickTryAgain={() => fetch({ data: data.nuuk, setData: setNuuk })}
             city={nuuk.city}
             country={nuuk.country}
             temperature={nuuk.temperature}
@@ -167,7 +146,13 @@ export default function Home() {
           <Card
             loading={urubici.loading}
             error={urubici.error}
-            onClickTryAgain={getDataFromUrubici}
+            onClickTryAgain={() =>
+              fetch({
+                data: data.urubici,
+                setData: setUrubici,
+                showMoreDetails: true
+              })
+            }
             city={urubici.city}
             country={urubici.country}
             temperature={urubici.temperature}
@@ -181,7 +166,9 @@ export default function Home() {
           <Card
             loading={nairobi.loading}
             error={nairobi.error}
-            onClickTryAgain={getDataFromNairobi}
+            onClickTryAgain={() =>
+              fetch({ data: data.nairobi, setData: setNairobi })
+            }
             city={nairobi.city}
             country={nairobi.country}
             temperature={nairobi.temperature}
