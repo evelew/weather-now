@@ -95,7 +95,7 @@ export default function Card({
           </div>
         )}
 
-        <p className="card-footer--time">Updated at {updatedAt} PM</p>
+        <p className="card-footer--time">Updated at {updatedAt}</p>
       </div>
     </article>
   )

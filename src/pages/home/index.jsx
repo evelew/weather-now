@@ -41,6 +41,7 @@ export default function Home() {
 
   useEffect(() => {
     getData()
+    updateAfterTenMinutes()
 
     // eslint-disable-next-line
   }, [])
@@ -49,6 +50,23 @@ export default function Home() {
     getDataFromNuuk()
     getDataFromUrubici()
     getDataFromNairobi()
+  }
+
+  const updateAfterTenMinutes = () => {
+    const tenMinutes = 600000
+
+    setInterval(() => {
+      getData()
+    }, tenMinutes)
+  }
+
+  const getDate = () => {
+    return new Date().toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    })
   }
 
   const getDataFromNuuk = async () => {
@@ -63,14 +81,14 @@ export default function Home() {
         city: city,
         country: country,
         temperature: main.temp,
-        updatedAt: '25:65:45',
+        updatedAt: getDate(),
         loading: false
       })
     } catch (error) {
       setNuuk({
         city: city,
         country: country,
-        updatedAt: '25:65:45',
+        updatedAt: getDate(),
         error: true
       })
     }
@@ -90,14 +108,14 @@ export default function Home() {
         temperature: main.temp,
         humidity: main.humidity,
         pressure: main.pressure,
-        updatedAt: '25:65:45',
+        updatedAt: getDate(),
         loading: false
       })
     } catch (error) {
       setUrubici({
         city: city,
         country: country,
-        updatedAt: '25:65:45',
+        updatedAt: getDate(),
         error: true
       })
     }
@@ -115,14 +133,14 @@ export default function Home() {
         city: city,
         country: country,
         temperature: main.temp,
-        updatedAt: '25:65:45',
+        updatedAt: getDate(),
         loading: false
       })
     } catch (error) {
       setNairobi({
         city: data.nairobi.city,
         country: data.nairobi.country,
-        updatedAt: '25:65:45',
+        updatedAt: getDate(),
         error: true
       })
     }
