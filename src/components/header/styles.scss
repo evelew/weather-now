@@ -1,7 +1,10 @@
 .header {
+  background: white;
   display: flex;
   justify-content: center;
   padding: 18px 0;
+  position: sticky;
+  top: 0;
 
   svg {
     width: 205px;
