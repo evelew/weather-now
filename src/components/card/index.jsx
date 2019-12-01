@@ -29,9 +29,9 @@ export default function Card({
   const renderHeader = () => {
     return (
       <div className="card-header">
-        <p>
+        <h1>
           {city}, {country}
-        </p>
+        </h1>
       </div>
     )
   }
