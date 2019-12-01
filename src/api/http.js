@@ -5,7 +5,7 @@ const httpClient = axios.create({
 });
 
 const request = options => {
-  const onSuccess = response => response;
+  const onSuccess = response => response.data;
 
   const onError = error => {
     if (error.response.status === 500) {

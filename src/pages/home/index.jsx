@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { Component } from 'react'
 
 import { fetchData } from 'api'
 
@@ -7,73 +7,81 @@ import Header from 'components/header'
 
 import './styles.scss'
 
-export default function Home() {
-  const tenMinutes = 600000
-  const cities = {
-    Nuuk: {
-      city: 'Nuuk',
-      country: 'GL'
-    },
-    Urubici: {
+const tenMinutes = 600000
+const cities = {
+  Nuuk: {
+    city: 'Nuuk',
+    country: 'GL'
+  },
+  Urubici: {
+    city: 'Urubici',
+    country: 'BR'
+  },
+  Nairobi: {
+    city: 'Nairobi',
+    country: 'KE'
+  }
+}
+
+export default class Home extends Component {
+  state = {
+    allCities: {
+      Nuuk: {
+        city: cities.Nuuk.city,
+        country: cities.Nuuk.country,
+        loading: true
+      },
+      Urubici: {
+        city: cities.Urubici.city,
+        country: cities.Urubici.country,
+        loading: true
+      },
+      Nairobi: {
+        city: cities.Nairobi.city,
+        country: cities.Nairobi.country,
+        loading: true
+      }
+    }
+  }
+
+  componentDidMount() {
+    this.getData()
+    this.updateAfterTenMinutes()
+  }
+
+  getData = () => {
+    this.getDataFrom({ city: 'Nuuk' })
+    this.getDataFrom({
       city: 'Urubici',
-      country: 'BR'
-    },
-    Nairobi: {
-      city: 'Nairobi',
-      country: 'KE'
-    }
+      showMoreDetails: true
+    })
+    this.getDataFrom({ city: 'Nairobi' })
   }
 
-  const [nuuk, setNuuk] = useState({
-    city: cities.Nuuk.city,
-    country: cities.Nuuk.country,
-    loading: true
-  })
-  const [urubici, setUrubici] = useState({
-    city: cities.Urubici.city,
-    country: cities.Urubici.country,
-    loading: true
-  })
-  const [nairobi, setNairobi] = useState({
-    city: cities.Nairobi.city,
-    country: cities.Nairobi.country,
-    loading: true
-  })
-
-  useEffect(() => {
-    getData()
-    updateAfterTenMinutes()
-
-    // eslint-disable-next-line
-  }, [])
-
-  const getData = async () => {
-    getDataFrom({ city: 'Nuuk', setData: setNuuk })
-    getDataFrom({ city: 'Urubici', setData: setUrubici, showMoreDetails: true })
-    getDataFrom({ city: 'Nairobi', setData: setNairobi })
-  }
-
-  const getDataFrom = ({ city, setData, showMoreDetails }) => {
-    const cityFromCache = getDataFromCache(city)
+  getDataFrom = ({ city, showMoreDetails }) => {
+    const cityFromCache = this.getDataFromCache(city)
     if (cityFromCache) {
-      return setDataCard({ data: cityFromCache, setData })
+      const newData = Object.assign(this.state.allCities, {
+        [city]: cityFromCache
+      })
+      return this.setState({ allCities: newData })
     }
 
-    return fetch({ data: cities[city], setData, showMoreDetails })
+    this.fetch({ data: cities[city], showMoreDetails })
   }
-  
-  const saveOnCache = data => {
+
+  saveOnCache = data => {
     localStorage.setItem(data['city'], JSON.stringify(data))
   }
 
-  const getDataFromCache = item => {
+  getDataFromCache = item => {
     const cacheData = JSON.parse(localStorage.getItem(item))
 
     if (cacheData) {
       const dateFromCache = new Date(cacheData.updatedAt).getTime()
       const now = new Date().getTime()
       const tenMinutesAgo = now - tenMinutes
-      const lessThanTenMinutes = dateFromCache > tenMinutesAgo
+      const lessThanTenMinutes = dateFromCache >= tenMinutesAgo
 
       if (lessThanTenMinutes) {
         return cacheData
@@ -85,124 +93,100 @@ export default function Home() {
     return null
   }
 
-  const updateAfterTenMinutes = () => {
+  updateAfterTenMinutes = () => {
     setInterval(() => {
-      getData()
+      Promise.resolve().then(() => {
+        this.fetch({ data: cities.Nuuk })
+        this.fetch({ data: cities.Urubici, showMoreDetails: true })
+        this.fetch({ data: cities.Nairobi })
+      })
     }, tenMinutes)
   }
 
-  const setDataCard = ({ data, setData }) => {
-    setData({
-      city: data.city,
-      country: data.country,
-      temperature: data.temperature,
-      humidity: data.humidity,
-      pressure: data.pressure,
-      updatedAt: data.updatedAt,
-      loading: false
-    })
+  setDataCard = ({ data }) => {
+    const newData = Object.assign(this.state.allCities, { [data.city]: data })
+    this.setState({ allCities: newData })
   }
 
-  const setErrorCard = ({ data, setData }) => {
-    setData({
-      city: data.city,
-      country: data.country,
-      error: true
+  setErrorCard = ({ data }) => {
+    const newData = Object.assign(this.state.allCities, {
+      [data.city]: {
+        error: true,
+        ...cities[data.city]
+      }
     })
+    this.setState({ allCities: newData })
   }
 
-  const fetch = async ({ data, setData, showMoreDetails }) => {
+  fetch = ({ data, showMoreDetails }) => {
     const { city, country } = data
-    setData({ loading: true })
+    const newData = Object.assign(this.state.allCities, {
+      [city]: { loading: true, ...data }
+    })
 
-    try {
-      const from = `${city},${country}`
-      const { main } = await fetchData({ from })
+    this.setState({ allCities: newData }, async () => {
+      try {
+        const from = `${city},${country}`
+        const { main } = await fetchData({ from })
 
-      let data = null
+        let data = null
 
-      if (showMoreDetails) {
-        data = {
-          city,
-          country,
-          temperature: parseInt(main.temp),
-          humidity: main.humidity,
-          pressure: main.pressure,
-          updatedAt: new Date()
+        if (showMoreDetails) {
+          data = {
+            city,
+            country,
+            temperature: parseInt(main.temp),
+            humidity: main.humidity,
+            pressure: main.pressure,
+            updatedAt: new Date(),
+            loading: false
+          }
+        } else {
+          data = {
+            city,
+            country,
+            temperature: parseInt(main.temp),
+            updatedAt: new Date(),
+            loading: false
+          }
         }
-      } else {
-        data = {
-          city,
-          country,
-          temperature: parseInt(main.temp),
-          updatedAt: new Date()
-        }
-      }
 
-      setDataCard({ data, setData })
-      saveOnCache(data)
-    } catch (error) {
-      const data = {
-        city,
-        country
+        this.setDataCard({ data })
+        this.saveOnCache(data)
+      } catch (error) {
+        const data = {
+          city,
+          country
+        }
+        this.setErrorCard({ data })
       }
-      setErrorCard({ data, setData })
-    }
+    })
   }
 
-  return (
-    <>
-      <Header />
+  render() {
+    const { allCities } = this.state
+    return (
+      <>
+        <Header />
 
-      <section className="home">
-        <article className="home--card">
-          <Card
-            loading={nuuk.loading}
-            error={nuuk.error}
-            onClickTryAgain={() =>
-              fetch({ data: cities.nuuk, setData: setNuuk })
-            }
-            city={nuuk.city}
-            country={nuuk.country}
-            temperature={nuuk.temperature}
-            updatedAt={nuuk.updatedAt}
-          />
-        </article>
-
-        <article className="home--card">
-          <Card
-            loading={urubici.loading}
-            error={urubici.error}
-            onClickTryAgain={() =>
-              fetch({
-                data: cities.urubici,
-                setData: setUrubici,
-                showMoreDetails: true
-              })
-            }
-            city={urubici.city}
-            country={urubici.country}
-            temperature={urubici.temperature}
-            humidity={urubici.humidity}
-            pressure={urubici.pressure}
-            updatedAt={urubici.updatedAt}
-          />
-        </article>
-
-        <article className="home--card">
-          <Card
-            loading={nairobi.loading}
-            error={nairobi.error}
-            onClickTryAgain={() =>
-              fetch({ data: cities.nairobi, setData: setNairobi })
-            }
-            city={nairobi.city}
-            country={nairobi.country}
-            temperature={nairobi.temperature}
-            updatedAt={nairobi.updatedAt}
-          />
-        </article>
-      </section>
-    </>
-  )
+        <section className="home">
+          {Object.keys(allCities).map((key, index) => (
+            <article className="home--card" key={index}>
+              <Card
+                loading={allCities[key].loading}
+                error={allCities[key].error}
+                onClickTryAgain={() => this.fetch({ data: allCities[key] })}
+                city={allCities[key].city}
+                country={allCities[key].country}
+                temperature={allCities[key].temperature}
+                humidity={allCities[key].humidity}
+                pressure={allCities[key].pressure}
+                updatedAt={allCities[key].updatedAt}
+              />
+            </article>
+          ))}
+        </section>
+      </>
+    )
+  }
 }
