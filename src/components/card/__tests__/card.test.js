@@ -16,7 +16,7 @@ describe('Card de temperatura', () => {
         temperature={17}
         humidity={65}
         pressure={856}
-        updatedAt="25:34:45 PM"
+        updatedAt="2019-12-01T01:39:19.820Z"
       />
     )
 
@@ -29,7 +29,7 @@ describe('Card de temperatura', () => {
     expect(getByText('PRESSURE'))
     expect(queryByText('856hPa'))
 
-    expect(getByText('Updated at 25:34:45 PM'))
+    expect(getByText('Updated at 11:39:19 PM'))
   })
 
   it('Não deve encontrar informações "humidity" e "pressure"', () => {
@@ -39,7 +39,7 @@ describe('Card de temperatura', () => {
         city="Curitiba"
         country="PR"
         temperature={17}
-        updatedAt="25:34:45 PM"
+        updatedAt="2019-12-01T01:39:19.820Z"
       />
     )
 
@@ -47,6 +47,6 @@ describe('Card de temperatura', () => {
     expect(getByText('17°'))
     expect(queryByText('HUMIDITY')).toBeNull()
     expect(queryByText('PRESSURE')).toBeNull()
-    expect(getByText('Updated at 25:34:45 PM'))
+    expect(getByText('Updated at 11:39:19 PM'))
   })
 })

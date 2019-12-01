@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { getFormattedDate } from 'common/helpers'
+
 import Loader from 'icons/loader'
 import './styles.scss'
 
@@ -95,7 +97,7 @@ export default function Card({
           </div>
         )}
 
-        <p className="card-footer--time">Updated at {updatedAt}</p>
+        <p className="card-footer--time">Updated at {getFormattedDate(updatedAt)}</p>
       </div>
     </article>
   )

@@ -8,7 +8,8 @@ import Header from 'components/header'
 import './styles.scss'
 
 export default function Home() {
-  const data = {
+  const tenMinutes = 600000
+  const cities = {
     nuuk: {
       city: 'Nuuk',
       country: 'GL'
@@ -24,18 +25,18 @@ export default function Home() {
   }
 
   const [nuuk, setNuuk] = useState({
-    city: data.nuuk.city,
-    country: data.nuuk.country,
+    city: cities.nuuk.city,
+    country: cities.nuuk.country,
     loading: true
   })
   const [urubici, setUrubici] = useState({
-    city: data.urubici.city,
-    country: data.urubici.country,
+    city: cities.urubici.city,
+    country: cities.urubici.country,
     loading: true
   })
   const [nairobi, setNairobi] = useState({
-    city: data.nairobi.city,
-    country: data.nairobi.country,
+    city: cities.nairobi.city,
+    country: cities.nairobi.country,
     loading: true
   })
 
@@ -47,26 +48,68 @@ export default function Home() {
   }, [])
 
   const getData = async () => {
-    fetch({ data: data.nuuk, setData: setNuuk })
-    fetch({ data: data.urubici, setData: setUrubici, showMoreDetails: true })
-    fetch({ data: data.nairobi, setData: setNairobi })
+    getDataFromNuuk()
+    getDataFromUrubici()
+    getDataFromNairobi()
+  }
+
+  const getDataFromNuuk = () => {
+    const nuuk = getDataFromCache(cities.nuuk.city)
+    if (nuuk) {
+      return setDataCard({ data: nuuk, setData: setNuuk })
+    }
+
+    return fetch({ data: cities.nuuk, setData: setNuuk })
+  }
+
+  const getDataFromUrubici = () => {
+    const urubici = getDataFromCache(cities.urubici.city)
+    if (urubici) {
+      return setDataCard({ data: urubici, setData: setUrubici })
+    }
+
+    return fetch({
+      data: cities.urubici,
+      setData: setUrubici,
+      showMoreDetails: true
+    })
+  }
+
+  const getDataFromNairobi = () => {
+    const nairobi = getDataFromCache(cities.nairobi.city)
+    if (nairobi) {
+      return setDataCard({ data: nairobi, setData: setNairobi })
+    }
+
+    return fetch({ data: cities.nairobi, setData: setNairobi })
+  }
+
+  const saveOnCache = data => {
+    localStorage.setItem(data['city'], JSON.stringify(data))
+  }
+
+  const getDataFromCache = item => {
+    const cacheData = JSON.parse(localStorage.getItem(item))
+
+    if (cacheData) {
+      const dateFromCache = new Date(cacheData.updatedAt).getTime()
+      const now = new Date().getTime() - tenMinutes
+      const lessThanTenMinutes = dateFromCache > now
+
+      if (lessThanTenMinutes) {
+        return cacheData
+      }
+      
+      return null
+    }
+
+    return null
   }
 
   const updateAfterTenMinutes = () => {
-    const tenMinutes = 600000
-
     setInterval(() => {
       getData()
     }, tenMinutes)
-  }
-
-  const getDate = () => {
-    return new Date().toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true
-    })
   }
 
   const setDataCard = ({ data, setData }) => {
@@ -76,7 +119,7 @@ export default function Home() {
       temperature: data.temperature,
       humidity: data.humidity,
       pressure: data.pressure,
-      updatedAt: getDate(),
+      updatedAt: data.updatedAt,
       loading: false
     })
   }
@@ -105,17 +148,20 @@ export default function Home() {
           country,
           temperature: parseInt(main.temp),
           humidity: main.humidity,
-          pressure: main.pressure
+          pressure: main.pressure,
+          updatedAt: new Date()
         }
       } else {
         data = {
           city,
           country,
-          temperature: parseInt(main.temp)
+          temperature: parseInt(main.temp),
+          updatedAt: new Date()
         }
       }
 
       setDataCard({ data, setData })
+      saveOnCache(data)
     } catch (error) {
       const data = {
         city,
@@ -134,7 +180,7 @@ export default function Home() {
           <Card
             loading={nuuk.loading}
             error={nuuk.error}
-            onClickTryAgain={() => fetch({ data: data.nuuk, setData: setNuuk })}
+            onClickTryAgain={() => fetch({ data: cities.nuuk, setData: setNuuk })}
             city={nuuk.city}
             country={nuuk.country}
             temperature={nuuk.temperature}
@@ -148,7 +194,7 @@ export default function Home() {
             error={urubici.error}
             onClickTryAgain={() =>
               fetch({
-                data: data.urubici,
+                data: cities.urubici,
                 setData: setUrubici,
                 showMoreDetails: true
               })
@@ -167,7 +213,7 @@ export default function Home() {
             loading={nairobi.loading}
             error={nairobi.error}
             onClickTryAgain={() =>
-              fetch({ data: data.nairobi, setData: setNairobi })
+              fetch({ data: cities.nairobi, setData: setNairobi })
             }
             city={nairobi.city}
             country={nairobi.country}
