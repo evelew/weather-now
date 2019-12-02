@@ -49,6 +49,10 @@ export default class Home extends Component {
     this.updateAfterTenMinutes()
   }
 
+  componentWillUnmount() {
+    clearInterval()
+  }
+
   getData = () => {
     this.getDataFrom({ city: 'Nuuk' })
     this.getDataFrom({
